@@ -1,4 +1,6 @@
-from odoo import fields, models, api
+from odoo import fields, models, api, _
+from odoo.exceptions import ValidationError,UserError
+from odoo.tools.float_utils import float_compare
 
 
 class EstateProperty(models.Model):
@@ -34,6 +36,11 @@ class EstateProperty(models.Model):
     total_area = fields.Integer(compute='_compute_total_area')
     best_price = fields.Float(compute='_compute_best_price')
 
+    _sql_constraints = [
+        ('check_expected_price', 'CHECK(expected_price > 0)','The expected price should be positive.'),
+        ('check_selling_price', 'CHECK(selling_price >= 0)', 'The selling_price should be positive.'),
+    ]
+
     @api.depends('living_area', 'garden_area')
     def _compute_total_area(self):
         for rec in self:
@@ -58,11 +65,33 @@ class EstateProperty(models.Model):
                 rec.garden_area = 0
                 rec.garden_orientation = False
 
+    def action_sold(self):
+        self.ensure_one()
+        if self.state == 'canceled':
+            raise UserError(_("Cancelled properties cannot be sold!"))
+        self.write({'state': 'sold'})
+
+    def action_cancel(self):
+        self.ensure_one()
+        self.write({'state': 'canceled'})
+
+    @api.constrains('selling_price')
+    def _check_selling_price(self):
+        for record in self:
+            if record.expected_price:
+                amount = record.expected_price * 0.9
+                if float_compare(record.selling_price, amount, precision_rounding=4) <= 0:
+                    raise ValidationError("the selling price cannot be lower than 90% of the expected price")
+
 
 class EstatePropertyTag(models.Model):
     _name = "estate.property.tag"
     _description = "Estate Property Tags"
 
     name = fields.Char(required=True)
+
+    _sql_constraints = [
+        ('uniq_name', 'UNIQUE(name)', 'The property tag name must be unique.'),
+    ]
 
 

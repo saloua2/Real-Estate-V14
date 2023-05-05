@@ -14,12 +14,29 @@ class EstatePropertyOffer(models.Model):
     validity = fields.Integer()
     date_deadline = fields.Date(compute='_compute_date_deadline', inverse='_inverse_date_deadline')
 
-    @api.depends('create_date', 'validity')
+    _sql_constraints = [
+        ('check_price', 'CHECK(price > 0)', 'The offer price should be positive.'),
+    ]
+
+    @api.depends('validity')
     def _compute_date_deadline(self):
         for rec in self:
             rec.date_deadline = fields.Date.today() + datetime.timedelta(days=rec.validity)
 
     def _inverse_date_deadline(self):
-        for lead in self:
-            lead.validity = lead.date_deadline - fields.Date.today()
+        for rec in self:
+            rec.date_deadline = fields.Date.today() - datetime.timedelta(days=rec.validity)
+
+    def action_accept(self):
+        self.ensure_one()
+        self.write({'status': 'accepted'})
+        user_id = self.env['res.users'].search([('partner_id','=',self.partner_id.id)])
+        self.property_id.selling_price = self.price
+        self.property_id.buyer_id = user_id.id
+
+    def action_refuse(self):
+        self.ensure_one()
+        self.write({'status': 'refused'})
+
+
 
