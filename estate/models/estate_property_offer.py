@@ -1,6 +1,8 @@
 import datetime
 
-from odoo import fields, models, api
+from odoo import fields, models, api, _
+from odoo.exceptions import UserError
+from odoo.tools.float_utils import float_compare
 
 
 class EstatePropertyOffer(models.Model):
@@ -39,6 +41,14 @@ class EstatePropertyOffer(models.Model):
     def action_refuse(self):
         self.ensure_one()
         self.write({'state': 'refused'})
+    @api.model
+    def create(self, vals):
+        print(self.env['estate.property'].browse(vals['property_id']))
+        active = self.env['estate.property'].browse(vals['property_id'])
+        if active.state == 'new' and active.best_price != 0.0:
+            active.write({'state': 'offer_received'})
+        return super(EstatePropertyOffer, self).create(vals)
+
 
 
 
