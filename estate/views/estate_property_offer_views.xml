@@ -10,7 +10,7 @@
                     <group>
                         <group>
                             <field name="price"/>
-                            <field name="status"/>
+                            <field name="state"/>
                         </group>
                         <group>
                             <field name="partner_id"/>
@@ -30,9 +30,16 @@
             <tree string="Properties">
                 <field name="price"/>
                 <field name="partner_id"/>
-                <field name="status"/>
+                <field name="state"/>
             </tree>
         </field>
+    </record>
+
+    <record id="estate_property_offer_action" model="ir.actions.act_window">
+        <field name="name">Offers</field>
+        <field name="res_model">estate.property.offer</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('property_type_id', '=', active_id)]</field>
     </record>
 
 </odoo>

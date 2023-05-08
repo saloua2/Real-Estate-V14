@@ -1,16 +1,18 @@
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError,UserError
 from odoo.tools.float_utils import float_compare
+from random import randint
 
 
 class EstateProperty(models.Model):
     _name = "estate.property"
     _description = "Estate Property"
+    _order = "id desc"
 
     name = fields.Char(required=True)
     description = fields.Text()
     postcode = fields.Char()
-    date_availability = fields.Date(copy=False, default=lambda self: fields.Date.today())
+    date_availability = fields.Date('Available From', copy=False, default=lambda self: fields.Date.today())
     expected_price = fields.Float(required=True)
     selling_price = fields.Float(readonly=True,copy=False)
     bedrooms = fields.Integer(default=2)
@@ -65,12 +67,20 @@ class EstateProperty(models.Model):
                 rec.garden_area = 0
                 rec.garden_orientation = False
 
+    def action_reset(self):
+        self.ensure_one()
+        self.write({'state': 'new'})
+    def action_offer_received(self):
+        self.ensure_one()
+        self.write({'state': 'offer_received'})
+    def action_offer_accepted(self):
+        self.ensure_one()
+        self.write({'state': 'offer_accepted'})
     def action_sold(self):
         self.ensure_one()
         if self.state == 'canceled':
             raise UserError(_("Cancelled properties cannot be sold!"))
         self.write({'state': 'sold'})
-
     def action_cancel(self):
         self.ensure_one()
         self.write({'state': 'canceled'})
@@ -87,8 +97,13 @@ class EstateProperty(models.Model):
 class EstatePropertyTag(models.Model):
     _name = "estate.property.tag"
     _description = "Estate Property Tags"
+    _order = "name"
+
+    def _get_default_color(self):
+        return randint(1, 11)
 
     name = fields.Char(required=True)
+    color = fields.Integer(string='Color Index', default=_get_default_color)
 
     _sql_constraints = [
         ('uniq_name', 'UNIQUE(name)', 'The property tag name must be unique.'),
