@@ -43,7 +43,7 @@
         <field name="postcode">67321</field>
         <field name="date_availability">2002-01-01</field>
         <field name="expected_price">300000</field>
-        <field name="selling_price">250000</field>
+        <field name="selling_price">290000</field>
         <field name="bedrooms">10</field>
         <field name="living_area">100</field>
         <field name="facades">8</field>

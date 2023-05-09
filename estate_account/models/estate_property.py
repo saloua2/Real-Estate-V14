@@ -4,6 +4,7 @@ class InheritedModel(models.Model):
     _inherit = "estate.property"
 
     def action_sold(self):
+        print(" reached ".center(100, '='))
         self.env["account.move"].create(
             {
                 "name": "Invoice of %s " %self.name,

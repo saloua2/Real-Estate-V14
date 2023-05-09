@@ -38,6 +38,7 @@ class EstateProperty(models.Model):
     total_area = fields.Integer(compute='_compute_total_area')
     best_price = fields.Float(compute='_compute_best_price')
     user_id = fields.Many2one('res.users')
+    company_id = fields.Many2one('res.company', default=lambda self: self.env.company)
 
     _sql_constraints = [
         ('check_expected_price', 'CHECK(expected_price > 0)','The expected price should be positive.'),

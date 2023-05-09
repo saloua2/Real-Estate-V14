@@ -2,7 +2,7 @@
     'name': "Real estate",
     'version': '1.0',
     'author': "Author Name",
-    'category': 'Category',
+    'category': 'Real Estate/Brokerage',
     'description': """
     Description text
     """,
@@ -10,6 +10,7 @@
     # data files always loaded at installation
     'data': [
         'security/ir.model.access.csv',
+        'security/security.xml',
         'data/estate.property.type.csv',
         'data/estate_property.xml',
         'data/estate_property_offer.xml',
