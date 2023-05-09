@@ -39,8 +39,8 @@ class EstatePropertyOffer(models.Model):
         self.property_id.buyer_id = user_id.id
 
     def action_refuse(self):
-        self.ensure_one()
-        self.write({'state': 'refused'})
+        for rec in self:
+            rec.write({'state': 'refused'})
     @api.model
     def create(self, vals):
         print(self.env['estate.property'].browse(vals['property_id']))
