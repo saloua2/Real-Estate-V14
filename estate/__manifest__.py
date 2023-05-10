@@ -20,6 +20,8 @@
         'views/estate_property_tag_views.xml',
         'views/estate_menus.xml',
         'views/res_users_view.xml',
+        'report/estate_report_views.xml',
+        'report/estate_report_templates.xml',
     ],
     # data files containing optionally loaded demonstration data
     'demo': [
