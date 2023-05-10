@@ -10,6 +10,7 @@
     # data files always loaded at installation
     'data': [
         'security/ir.model.access.csv',
+        'report/estate_property_report.xml',
     ],
     # data files containing optionally loaded demonstration data
     'demo': [
